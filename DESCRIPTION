@@ -3,7 +3,7 @@ Maintainer: Toby Dylan Hocking <toby.hocking@r-project.org>
 Author: Toby Dylan Hocking
 Version: 2018.11.19
 License: GPL-3
-Title: Running and parsing SLURM commands
+Title: Running and Parsing SLURM Commands
 Description:  User-friendly wrappers for SLURM commands.
 Imports: namedCapture (>= 2018.11.19), data.table (>= 1.11.6)
 SystemRequirements: SLURM command line programs (sacct, squeue)
