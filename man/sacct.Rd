@@ -8,7 +8,7 @@
 }
 }
 
-\value{data.table with one row per job/task.}
+
 
 \author{Toby Dylan Hocking}
 

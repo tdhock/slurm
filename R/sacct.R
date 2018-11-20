@@ -1,6 +1,6 @@
 ### Run sacct with args and parse output as a data.table
 sacct <- function(args){
-  JobID.taskN <- jobID.task1 <- JobID <- JobID.task <- MaxRSS.unit <-
+  JobID.taskN <- JobID.task1 <- JobID <- JobID.task <- MaxRSS.unit <-
     MaxRSS.megabytes <- MaxRSS.amount <- type <- JobID.type <- hours <-
       Elapsed.days <- Elapsed.hours <- Elapsed.minutes <- Elapsed.seconds <-
         JobID.job <- task <- Elapsed <- NULL
@@ -14,7 +14,12 @@ sacct <- function(args){
   ## caused the process to terminate if it was terminated by a signal.
   ## The DerivedExitCode can be modified by invoking sacctmgr modify
   ## job or the specialized sjobexitmod command.
-  sacct.dt <- fread(cmd, fill=TRUE, sep="|")
+  sacct_fread(cmd=cmd)
+}
+
+### Run fread on the output of sacct.
+sacct_fread <- structure(function(...){
+  sacct.dt <- fread(..., fill=TRUE, sep="|")
   ## ExitCode The exit code returned by the job script or salloc,
   ## typically as set by the exit() function.  Following the colon is
   ## the signal that caused the process to terminate if it was
@@ -101,7 +106,28 @@ sacct <- function(args){
   }][rss.dt, on=list(JobID.job, task)]
   time.dt
 ### data.table with one row per job/task.
-}
+}, ex=function(){
+
+  library(slurm)
+  sacct.csv <- system.file(
+    "data", "sacct-job13936577.csv", package="slurm", mustWork=TRUE)
+  task.dt <- sacct_fread(sacct.csv)
+  task.dt[State_batch != "COMPLETED"]
+
+  if(require(ggplot2)){
+    ggplot()+
+      geom_point(aes(
+        hours, MaxRSS.megabytes, fill=State_batch),
+        shape=21,
+        data=task.dt)+
+      scale_fill_manual(values=c(
+        COMPLETED=NA,
+        FAILED="red"))+
+      scale_x_log10()+
+      scale_y_log10()
+  }
+  
+})
 
 ### Report counts of tasks with State/ExitCode values for given job IDS
 sjob <- function(job.id=sq.jobs(), tasks.width=11){

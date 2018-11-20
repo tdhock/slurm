@@ -1,4 +1,6 @@
-Some functions for monitoring the status of SLURM jobs.
+Functions for monitoring the status of SLURM jobs.
+
+[[https://travis-ci.org/tdhock/slurm][https://travis-ci.org/tdhock/slurm.png?branch=master]]
 
 ** Installation
 
