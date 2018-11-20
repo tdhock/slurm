@@ -1,10 +1,5 @@
 ### Run sacct with args and parse output as a data.table
-sacct <- function(args){
-  JobID.taskN <- JobID.task1 <- JobID <- JobID.task <- MaxRSS.unit <-
-    MaxRSS.megabytes <- MaxRSS.amount <- type <- JobID.type <- hours <-
-      Elapsed.days <- Elapsed.hours <- Elapsed.minutes <- Elapsed.seconds <-
-        JobID.job <- task <- Elapsed <- NULL
-  ## above to avoid CRAN NOTE
+sacct <- structure(function(args){
    cmd <- paste(
     "sacct",
     args,
@@ -15,10 +10,21 @@ sacct <- function(args){
   ## The DerivedExitCode can be modified by invoking sacctmgr modify
   ## job or the specialized sjobexitmod command.
   sacct_fread(cmd=cmd)
-}
+}, ex=function(){
+
+  if(FALSE){
+    sacct("-j123,456")
+  }
+  
+})
 
 ### Run fread on the output of sacct.
 sacct_fread <- structure(function(...){
+  JobID.taskN <- JobID.task1 <- JobID <- JobID.task <- MaxRSS.unit <-
+    MaxRSS.megabytes <- MaxRSS.amount <- type <- JobID.type <- hours <-
+      Elapsed.days <- Elapsed.hours <- Elapsed.minutes <- Elapsed.seconds <-
+        JobID.job <- task <- Elapsed <- NULL
+  ## above to avoid CRAN NOTE
   sacct.dt <- fread(..., fill=TRUE, sep="|")
   ## ExitCode The exit code returned by the job script or salloc,
   ## typically as set by the exit() function.  Following the colon is
@@ -129,11 +135,16 @@ sacct_fread <- structure(function(...){
   
 })
 
-### Report counts of tasks with State/ExitCode values for given job IDS
+### Run sacct and summarize State/ExitCode values for given job IDS
 sjob <- function(job.id=sq.jobs(), tasks.width=11){
+  sacct.dt <- sacct(paste0("-j", job.id))
+  sjob_dt(sacct.dt, tasks.width=tasks.width)
+}
+
+### Get summary dt from sacct dt.
+sjob_dt <- structure(function(time.dt, tasks.width=11){
   ExitCodes <- task <- NULL
   ## above to avoid CRAN NOTE
-  time.dt <- sacct(paste0("-j", job.id))
   suffix.vec <- c("batch", "blank", "extern")
   col.name.list <- list()
   for(prefix in c("ExitCode", "State")){
@@ -161,7 +172,15 @@ sjob <- function(job.id=sq.jobs(), tasks.width=11){
     )
   }, by=by.vars]
 ### data.table summarizing State/ExitCode distribution over jobs
-}
+}, ex=function(){
+
+  library(slurm)
+  sacct.csv <- system.file(
+    "data", "sacct-job13936577.csv", package="slurm", mustWork=TRUE)
+  task.dt <- sacct_fread(sacct.csv)
+  (summary.dt <- sjob_dt(task.dt))
+  
+})
 
 ### get currently running jobs
 sq.jobs <- function(args="-u $USER"){

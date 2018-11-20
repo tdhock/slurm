@@ -11,7 +11,15 @@ devtools::install_github("tdhock/slurm")
 ** Usage
 
 #+BEGIN_SRC R
+  ## Run sacct to get info for all tasks associated with two jobs.
+  task.dt <- sacct("-j123,456")
 
+  ## Summarize states/exitCodes for each task.
+  (summary.dt <- sjob_dt(task.dt))
+
+  ## Run squeue/sacct to get currently running jobs and summarize their
+  ## states/exitCodes.
+  (current.dt <- sjob())
 #+END_SRC
 
 ** Related work

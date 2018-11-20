@@ -15,4 +15,10 @@
 
 
 
+\examples{
 
+if(FALSE){
+  sacct("-j123,456")
+}
+
+}
