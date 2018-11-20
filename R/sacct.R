@@ -115,9 +115,10 @@ sacct_fread <- structure(function(...){
 }, ex=function(){
 
   library(slurm)
-  sacct.csv <- system.file(
-    "data", "sacct-job13936577.csv", package="slurm", mustWork=TRUE)
-  task.dt <- sacct_fread(sacct.csv)
+  sacct.csv.gz <- system.file(
+    "data", "sacct-job13936577.csv.gz", package="slurm", mustWork=TRUE)
+  cmd <- paste("zcat", sacct.csv.gz)
+  task.dt <- sacct_fread(cmd=cmd)
   task.dt[State_batch != "COMPLETED"]
 
   if(require(ggplot2)){
@@ -175,9 +176,10 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
 }, ex=function(){
 
   library(slurm)
-  sacct.csv <- system.file(
-    "data", "sacct-job13936577.csv", package="slurm", mustWork=TRUE)
-  task.dt <- sacct_fread(sacct.csv)
+  sacct.csv.gz <- system.file(
+    "data", "sacct-job13936577.csv.gz", package="slurm", mustWork=TRUE)
+  cmd <- paste("zcat", sacct.csv.gz)
+  task.dt <- sacct_fread(cmd=cmd)
   (summary.dt <- sjob_dt(task.dt))
   
 })
