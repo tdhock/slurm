@@ -1,0 +1,19 @@
+Some functions for monitoring the status of SLURM jobs.
+
+** Installation
+
+#+BEGIN_SRC R
+devtools::install_github("tdhock/slurm")
+#+END_SRC
+
+** Usage
+
+#+BEGIN_SRC R
+
+#+END_SRC
+
+** Related work
+
+For launching SLURM jobs from R,
+- [[https://github.com/SESYNC-ci/rslurm][rslurm]]
+- [[https://github.com/mllg/batchtools][batchtools]]
