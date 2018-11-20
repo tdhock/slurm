@@ -33,7 +33,27 @@ sacct_fread <- structure(function(...){
   na.as.zero <- function(int.or.empty){
     ifelse(int.or.empty=="", 0L, as.integer(int.or.empty))
   }
+  range.pattern <- list(
+    "[[]",
+    task1="[0-9]+", as.integer,
+    "(?:-",#begin optional end of range.
+    taskN="[0-9]+", as.integer,
+    ")?", #end is optional.
+    "[]]")
+  task.pattern <- list(
+    "(?:",#begin alternate
+    task="[0-9]+", as.integer,
+    "|",#either one task(above) or range(below)
+    range.pattern,
+    ")")#end alternate
   pattern.list <- list(
+    JobID=list(
+      job="[0-9]+", as.integer,
+      "_",
+      task.pattern,
+      "(?:[.]",
+      type=".*",
+      ")?"),
     ExitCode=list(
       before="[0-9]+", as.integer,
       ":",
@@ -48,22 +68,6 @@ sacct_fread <- structure(function(...){
       minutes="[0-9]+", as.integer,
       ":",
       seconds="[0-9]+", as.integer),
-    JobID=list(
-      job="[0-9]+", as.integer,
-      "_",
-      "(?:",#begin alternate
-      task="[0-9]+", as.integer,
-      "|",#either one task(above) or range(below)
-      "[[]",
-      task1="[0-9]+", as.integer,
-      "(?:-",#begin optional end of range.
-      taskN="[0-9]+", as.integer,
-      ")?", #end is optional.
-      "[]]",
-      ")",#end alternate
-      "(?:[.]",
-      type=".*",
-      ")?"),
     MaxRSS=list(
       amount="[.0-9]+", as.numeric,
       unit=".*"))
