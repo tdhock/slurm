@@ -15,9 +15,18 @@ test_that("job ID field parsed correctly", {
     "data", "sacct-multitype.csv.gz", package="slurm", mustWork=TRUE)
   cmd <- paste("zcat", sacct.csv.gz)
   task.dt <- sacct_fread(cmd=cmd)
-  ord.dt <- task.dt[order(JobID.job, task)]
-  expect_identical(ord.dt$JobID.job, as.integer(c(
+  ord.dt <- task.dt[order(job, task)]
+  expect_identical(ord.dt$job, as.integer(c(
     13937810, 14022192, 14022192, 14022192, 14022204)))
   expect_identical(ord.dt$task, as.integer(c(
     25, 1, 2, 3, 4)))
+})
+
+test_that("job ID suffixes both optional", {
+  sacct.csv.gz <- system.file(
+    "data", "sacct-2019-11-21.csv.gz", package="slurm", mustWork=TRUE)
+  cmd <- paste("zcat", sacct.csv.gz)
+  task.dt <- sacct_fread(cmd=cmd)
+  task.uniq <- unique(task.dt[, .(job, task)])
+  expect_equal(nrow(task.dt), nrow(task.uniq))
 })
