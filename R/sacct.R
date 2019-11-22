@@ -15,15 +15,15 @@ sacct <- structure(function(args){
   if(FALSE){
     sacct("-j123,456")
   }
-  
+
 })
 
 ### Run fread on the output of sacct.
 sacct_fread <- structure(function(...){
-  JobID.taskN <- JobID.task1 <- JobID <- JobID.task <- MaxRSS.unit <-
-    MaxRSS.megabytes <- MaxRSS.amount <- type <- JobID.type <- hours <-
-      Elapsed.days <- Elapsed.hours <- Elapsed.minutes <- Elapsed.seconds <-
-        JobID.job <- task <- Elapsed <- NULL
+  taskN <- task1 <- JobID <- task <- task.id <- unit <-
+    megabytes <- amount <- type <- type <- hours <-
+      days.only <- hours.only <- minutes.only <- seconds.only <-
+        job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE
   sacct.dt <- fread(..., fill=TRUE, sep="|")
   ## ExitCode The exit code returned by the job script or salloc,
@@ -73,7 +73,7 @@ sacct_fread <- structure(function(...){
       seconds.only="[0-9]+", as.integer),
     MaxRSS=list(
       amount="[.0-9]+", as.numeric,
-      unit=".*", 
+      unit=".*",
       nomatch.error=FALSE))
   range.dt <- match.dt[!is.na(taskN)]
   task.dt <- rbind(
@@ -136,7 +136,7 @@ sacct_fread <- structure(function(...){
       scale_x_log10()+
       scale_y_log10()
   }
-  
+
 })
 
 ### Run sacct and summarize State/ExitCode values for given job IDS
@@ -169,7 +169,7 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
       tasks={
         tasks.long <- paste(task, collapse=",")
         ifelse(
-          tasks.width < nchar(tasks.long), 
+          tasks.width < nchar(tasks.long),
           sub("[0-9]+$", "", substr(tasks.long, 1, tasks.width-1)),
           tasks.long)
       }
@@ -184,7 +184,7 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
   cmd <- paste("zcat", sacct.csv.gz)
   task.dt <- sacct_fread(cmd=cmd)
   (summary.dt <- sjob_dt(task.dt))
-  
+
 })
 
 ### get currently running jobs
