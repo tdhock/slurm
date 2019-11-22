@@ -15,15 +15,15 @@ sacct <- structure(function(args){
   if(FALSE){
     sacct("-j123,456")
   }
-  
+
 })
 
 ### Run fread on the output of sacct.
 sacct_fread <- structure(function(...){
-  JobID.taskN <- JobID.task1 <- JobID <- JobID.task <- MaxRSS.unit <-
-    MaxRSS.megabytes <- MaxRSS.amount <- type <- JobID.type <- hours <-
-      Elapsed.days <- Elapsed.hours <- Elapsed.minutes <- Elapsed.seconds <-
-        JobID.job <- task <- Elapsed <- NULL
+  taskN <- task1 <- JobID <- task <- task.id <- unit <-
+    megabytes <- amount <- type <- type <- hours <-
+      days.only <- hours.only <- minutes.only <- seconds.only <-
+        job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE
   sacct.dt <- fread(..., fill=TRUE, sep="|")
   ## ExitCode The exit code returned by the job script or salloc,
@@ -33,87 +33,86 @@ sacct_fread <- structure(function(...){
   na.as.zero <- function(int.or.empty){
     ifelse(int.or.empty=="", 0L, as.integer(int.or.empty))
   }
+  optional.end <- list(
+    list("-", taskN="[0-9]+", as.integer),
+    "?")
   range.pattern <- list(
-    "[[]",
+    "\\[",
     task1="[0-9]+", as.integer,
-    "(?:-",#begin optional end of range.
-    taskN="[0-9]+", as.integer,
-    ")?", #end is optional.
-    "[]]")
+    optional.end,
+    "\\]")
   task.pattern <- list(
-    "(?:",#begin alternate
-    task="[0-9]+", as.integer,
+    task.id="[0-9]+", as.integer,
     "|",#either one task(above) or range(below)
-    range.pattern,
-    ")")#end alternate
-  pattern.list <- list(
+    range.pattern)
+  optional.type <- list(
+    list("[.]", type=".*"),
+    "?")
+  optional.task <- list(
+    list("_", task.pattern),
+    "?")
+  match.dt <- nc::capture_first_df(
+    sacct.dt,
     JobID=list(
       job="[0-9]+", as.integer,
-      "_",
-      task.pattern,
-      "(?:[.]",
-      type=".*",
-      ")?"),
+      optional.task,
+      optional.type),
     ExitCode=list(
       before="[0-9]+", as.integer,
       ":",
       after="[0-9]+", as.integer),
     Elapsed=list(
       "(?:",
-      days="[0-9]+", na.as.zero,
+      days.only="[0-9]+", na.as.zero,
       "-)?",
       "(?:",
-      hours="[0-9]+", na.as.zero,
+      hours.only="[0-9]+", na.as.zero,
       ":)?",
-      minutes="[0-9]+", as.integer,
+      minutes.only="[0-9]+", as.integer,
       ":",
-      seconds="[0-9]+", as.integer),
+      seconds.only="[0-9]+", as.integer),
     MaxRSS=list(
       amount="[.0-9]+", as.numeric,
-      unit=".*"))
-  match.dt.list <- list(sacct.dt)
-  for(col.name in names(pattern.list)){
-    col.pattern <- pattern.list[[col.name]]
-    subject <- paste(sacct.dt[[col.name]])
-    all.args <- c(list(subject), col.pattern)
-    match.dt.list[[col.name]] <- do.call(str_match_variable, all.args)
-  }
-  match.dt <- do.call(data.table, match.dt.list)
-  range.dt <- match.dt[!is.na(JobID.taskN)]
+      unit=".*",
+      nomatch.error=FALSE))
+  range.dt <- match.dt[!is.na(taskN)]
   task.dt <- rbind(
     if(nrow(range.dt))range.dt[, {
-      data.table(.SD, task=seq(JobID.task1, JobID.taskN))
+      data.table(.SD, task=seq(task1, taskN))
     }, by=list(JobID)],
-    match.dt[is.na(JobID.taskN), {
-      data.table(.SD, task=ifelse(is.na(JobID.task), JobID.task1, JobID.task))
+    match.dt[is.na(taskN), {
+      data.table(.SD, task=ifelse(is.na(task.id), task1, task.id))
     }])
-  tomega.vec <- c(
-    K=1/1024,
+  amount.per.megabyte <- c(
+    K=1024,
     M=1)
-  unit.vec <- task.dt[!is.na(MaxRSS.unit), unique(MaxRSS.unit)]
-  bad.unit <- ! unit.vec %in% names(tomega.vec)
-  if(any(bad.unit)){
-    print(unit.vec[bad.unit])
-    stop("unrecognized unit")
+  task.dt[, megabytes := ifelse(
+    amount==0, 0, amount/amount.per.megabyte[paste(unit)]
+  )]
+  bad.unit.dt <- task.dt[is.na(megabytes) & !is.na(unit)]
+  if(nrow(bad.unit.dt)){
+    bad.str <- paste(
+      sprintf("'%s'", unique(bad.unit.dt$unit)),
+      collapse=", ")
+    stop("unrecognized unit: ", bad.str)
   }
-  task.dt[, MaxRSS.megabytes := MaxRSS.amount*tomega.vec[paste(MaxRSS.unit)] ]
-  task.dt[, type := ifelse(JobID.type=="", "blank", JobID.type)]
+  task.dt[, type := ifelse(type=="", "blank", type)]
   task.dt[, hours := {
-    Elapsed.days * 24 +
-      Elapsed.hours +
-      Elapsed.minutes/60 +
-      Elapsed.seconds/60/60
+    days.only * 24 +
+      hours.only +
+      minutes.only/60 +
+      seconds.only/60/60
   }]
   wide.dt <- dcast(
     task.dt,
-    JobID.job + task ~ type,
+    job + task ~ type,
     value.var=c("State", "ExitCode"))
-  rss.dt <- task.dt[JobID.type=="batch", {
-    list(JobID.job, task, MaxRSS.megabytes)
-  }][wide.dt, on=list(JobID.job, task)]
+  rss.dt <- task.dt[type=="batch", {
+    list(job, task, megabytes)
+  }][wide.dt, on=list(job, task)]
   time.dt <- task.dt[type=="blank", {
-    list(JobID.job, task, Elapsed, hours)
-  }][rss.dt, on=list(JobID.job, task)]
+    list(job, task, Elapsed, hours)
+  }][rss.dt, on=list(job, task)]
   time.dt
 ### data.table with one row per job/task.
 }, ex=function(){
@@ -128,7 +127,7 @@ sacct_fread <- structure(function(...){
   if(require(ggplot2)){
     ggplot()+
       geom_point(aes(
-        hours, MaxRSS.megabytes, fill=State_batch),
+        hours, megabytes, fill=State_batch),
         shape=21,
         data=task.dt)+
       scale_fill_manual(values=c(
@@ -137,7 +136,7 @@ sacct_fread <- structure(function(...){
       scale_x_log10()+
       scale_y_log10()
   }
-  
+
 })
 
 ### Run sacct and summarize State/ExitCode values for given job IDS
@@ -170,7 +169,7 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
       tasks={
         tasks.long <- paste(task, collapse=",")
         ifelse(
-          tasks.width < nchar(tasks.long), 
+          tasks.width < nchar(tasks.long),
           sub("[0-9]+$", "", substr(tasks.long, 1, tasks.width-1)),
           tasks.long)
       }
@@ -185,7 +184,7 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
   cmd <- paste("zcat", sacct.csv.gz)
   task.dt <- sacct_fread(cmd=cmd)
   (summary.dt <- sjob_dt(task.dt))
-  
+
 })
 
 ### get currently running jobs

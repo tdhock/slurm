@@ -1,4 +1,4 @@
 exportPattern("^[[:alpha:]]+")
 import(data.table)
-import(namedCapture)
+import(nc)
 
