@@ -30,3 +30,11 @@ test_that("job ID suffixes both optional", {
   task.uniq <- unique(task.dt[, .(job, task)])
   expect_equal(nrow(task.dt), nrow(task.uniq))
 })
+
+test_that("all NA column read as character", {
+  sacct.txt <- system.file(
+    "extdata", "slurm-multistep.txt", package="slurm", mustWork=TRUE)
+  task.dt <- sacct_fread(file=sacct.txt)
+  expect_equal(task.dt$task, 1:999)
+})
+

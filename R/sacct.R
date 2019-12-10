@@ -25,7 +25,7 @@ sacct_fread <- structure(function(...){
       days.only <- hours.only <- minutes.only <- seconds.only <-
         job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE
-  sacct.dt <- fread(..., fill=TRUE, sep="|")
+  sacct.dt <- fread(..., fill=TRUE, sep="|", colClasses=list(character=1:5))
   ## ExitCode The exit code returned by the job script or salloc,
   ## typically as set by the exit() function.  Following the colon is
   ## the signal that caused the process to terminate if it was
