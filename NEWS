@@ -2,6 +2,8 @@
 
 colClasses=character in sacct_fread.
 
+simplify/clarify sacct_fread using nc::quantifier.
+
 2019.11.21
 
 namedCapture->nc.

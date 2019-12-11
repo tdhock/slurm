@@ -38,3 +38,15 @@ test_that("all NA column read as character", {
   expect_equal(task.dt$task, 1:999)
 })
 
+test_that("multi user data", {
+  sacct.txt <- system.file(
+    "extdata", "slurm-multiuser.txt", package="slurm", mustWork=TRUE)
+  task.dt <- sacct_fread(file=sacct.txt)
+  expect_equal(task.dt$task, 1:999)
+})
+
+test_that("no tasks is OK", {
+  task.dt <- sacct_fread(text="JobID|ExitCode|State|MaxRSS|Elapsed\n")
+  expect_equal(nrow(task.dt), 0)
+})
+

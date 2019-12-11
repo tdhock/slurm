@@ -5,7 +5,7 @@ Version: 2019.12.10
 License: GPL-3
 Title: Running and Parsing SLURM Commands
 Description:  User-friendly wrappers for SLURM commands.
-Imports: data.table (>= 1.11.6), nc
+Imports: data.table (>= 1.11.6), nc (>= 2019.11.22)
 SystemRequirements: SLURM command line programs (sacct, squeue)
 Suggests: testthat, ggplot2
 

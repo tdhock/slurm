@@ -26,6 +26,7 @@ sacct_fread <- structure(function(...){
         job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE
   sacct.dt <- fread(..., fill=TRUE, sep="|", colClasses=list(character=1:5))
+  if(nrow(sacct.dt)==0)return(sacct.dt)
   ## ExitCode The exit code returned by the job script or salloc,
   ## typically as set by the exit() function.  Following the colon is
   ## the signal that caused the process to terminate if it was
@@ -33,44 +34,32 @@ sacct_fread <- structure(function(...){
   na.as.zero <- function(int.or.empty){
     ifelse(int.or.empty=="", 0L, as.integer(int.or.empty))
   }
-  optional.end <- list(
-    list("-", taskN="[0-9]+", as.integer),
-    "?")
+  int.pattern <- list("[0-9]+", as.integer)
   range.pattern <- list(
     "\\[",
-    task1="[0-9]+", as.integer,
-    optional.end,
+    task1=int.pattern,
+    nc::quantifier("-", taskN=int.pattern, "?"),
     "\\]")
   task.pattern <- list(
-    task.id="[0-9]+", as.integer,
+    task.id=int.pattern,
     "|",#either one task(above) or range(below)
     range.pattern)
-  optional.type <- list(
-    list("[.]", type=".*"),
-    "?")
-  optional.task <- list(
-    list("_", task.pattern),
-    "?")
   match.dt <- nc::capture_first_df(
     sacct.dt,
     JobID=list(
-      job="[0-9]+", as.integer,
-      optional.task,
-      optional.type),
+      job=int.pattern,
+      nc::quantifier("_", task.pattern, "?"),
+      nc::quantifier("[.]", type=".*", "?")),
     ExitCode=list(
-      before="[0-9]+", as.integer,
+      before=int.pattern,
       ":",
-      after="[0-9]+", as.integer),
+      after=int.pattern),
     Elapsed=list(
-      "(?:",
-      days.only="[0-9]+", na.as.zero,
-      "-)?",
-      "(?:",
-      hours.only="[0-9]+", na.as.zero,
-      ":)?",
-      minutes.only="[0-9]+", as.integer,
+      nc::quantifier(days.only="[0-9]+", na.as.zero, "-", "?"),
+      nc::quantifier(hours.only="[0-9]+", na.as.zero, ":", "?"),
+      minutes.only=int.pattern,
       ":",
-      seconds.only="[0-9]+", as.integer),
+      seconds.only=int.pattern),
     MaxRSS=list(
       amount="[.0-9]+", as.numeric,
       unit=".*",
