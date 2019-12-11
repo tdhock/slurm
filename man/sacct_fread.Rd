@@ -1,7 +1,7 @@
 \name{sacct_fread}
 \alias{sacct_fread}
 \title{sacct fread}
-\description{Run fread on the output of sacct.}
+\description{Run fread on the output of \code{\link{sacct}}.}
 \usage{sacct_fread(...)}
 \arguments{
   \item{\dots}{
@@ -27,7 +27,7 @@ task.dt[State_batch != "COMPLETED"]
 if(require(ggplot2)){
   ggplot()+
     geom_point(aes(
-      hours, MaxRSS.megabytes, fill=State_batch),
+      hours, megabytes, fill=State_batch),
       shape=21,
       data=task.dt)+
     scale_fill_manual(values=c(

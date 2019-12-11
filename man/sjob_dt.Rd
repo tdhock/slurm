@@ -1,7 +1,7 @@
 \name{sjob_dt}
 \alias{sjob_dt}
 \title{sjob dt}
-\description{Get summary dt from sacct dt.}
+\description{Get summary dt from \code{\link{sacct}} dt.}
 \usage{sjob_dt(time.dt, tasks.width = 11)}
 \arguments{
   \item{time.dt}{

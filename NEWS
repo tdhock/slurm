@@ -1,0 +1,13 @@
+2019.12.10
+
+colClasses=character in sacct_fread.
+
+2019.11.21
+
+namedCapture->nc.
+
+update regex in sacct_fread so that both job ID suffixes are optional.
+
+2018.11.18
+
+first version?
