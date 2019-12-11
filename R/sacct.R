@@ -25,7 +25,10 @@ sacct_fread <- structure(function(...){
       Elapsed.days <- Elapsed.hours <- Elapsed.minutes <- Elapsed.seconds <-
         JobID.job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE
-  sacct.dt <- fread(..., fill=TRUE, sep="|")
+  sacct.dt <- fread(..., fill=TRUE, sep="|", colClasses=list(character=1:5))
+  if(nrow(sacct.dt)==0){
+    return(sacct.dt)#to avoid error later
+  }
   ## ExitCode The exit code returned by the job script or salloc,
   ## typically as set by the exit() function.  Following the colon is
   ## the signal that caused the process to terminate if it was
@@ -46,7 +49,8 @@ sacct_fread <- structure(function(...){
     "|",#either one task(above) or range(below)
     range.pattern,
     ")")#end alternate
-  pattern.list <- list(
+  match.dt <- namedCapture::df_match_variable(
+    sacct.dt,
     JobID=list(
       job="[0-9]+", as.integer,
       "_",
@@ -69,16 +73,8 @@ sacct_fread <- structure(function(...){
       ":",
       seconds="[0-9]+", as.integer),
     MaxRSS=list(
-      amount="[.0-9]+", as.numeric,
+      amount="[.0-9]*", as.numeric,
       unit=".*"))
-  match.dt.list <- list(sacct.dt)
-  for(col.name in names(pattern.list)){
-    col.pattern <- pattern.list[[col.name]]
-    subject <- paste(sacct.dt[[col.name]])
-    all.args <- c(list(subject), col.pattern)
-    match.dt.list[[col.name]] <- do.call(str_match_variable, all.args)
-  }
-  match.dt <- do.call(data.table, match.dt.list)
   range.dt <- match.dt[!is.na(JobID.taskN)]
   task.dt <- rbind(
     if(nrow(range.dt))range.dt[, {
@@ -91,7 +87,7 @@ sacct_fread <- structure(function(...){
     K=1/1024,
     M=1)
   unit.vec <- task.dt[!is.na(MaxRSS.unit), unique(MaxRSS.unit)]
-  bad.unit <- ! unit.vec %in% names(tomega.vec)
+  bad.unit <- ! unit.vec %in% c(names(tomega.vec), "")
   if(any(bad.unit)){
     print(unit.vec[bad.unit])
     stop("unrecognized unit")
@@ -124,6 +120,10 @@ sacct_fread <- structure(function(...){
   cmd <- paste("zcat", sacct.csv.gz)
   task.dt <- sacct_fread(cmd=cmd)
   task.dt[State_batch != "COMPLETED"]
+
+  sacct_fread(text="JobID|ExitCode|State|MaxRSS|Elapsed
+18473217_1|0:0|RUNNING||00:03:47
+18473217_1.extern|0:0|RUNNING||00:03:47")
 
   if(require(ggplot2)){
     ggplot()+
