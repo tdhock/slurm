@@ -1,11 +1,12 @@
 Package: slurm
 Maintainer: Toby Dylan Hocking <toby.hocking@r-project.org>
 Author: Toby Dylan Hocking
-Version: 2019.12.10
+Version: 2019.12.11
 License: GPL-3
 Title: Running and Parsing SLURM Commands
 Description:  User-friendly wrappers for SLURM commands.
 Imports: data.table (>= 1.11.6), nc (>= 2019.11.22)
+Remotes: tdhock/nc
 SystemRequirements: SLURM command line programs (sacct, squeue)
 Suggests: testthat, ggplot2
 

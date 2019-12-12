@@ -1,15 +1,79 @@
+### Convert empty string to zero and use as.integer otherwise.
+na.as.zero <- function(int.or.empty){
+  ifelse(int.or.empty=="", 0L, as.integer(int.or.empty))
+}
+
+### Match one or more digits and convert to integer.
+int.pattern <- list("[0-9]+", as.integer)
+
+### Pattern for either one task or a range.
+task.pattern <- list(
+  task.id=int.pattern,
+  "|",#either one task(above) or range(below)
+  "\\[",
+  task1=int.pattern,
+  nc::quantifier("-", taskN=int.pattern, "?"),
+  "\\]")
+
+### Named list of patterns for parsing sacct fields.
+sacct.pattern.list <- list(
+  JobID=list(
+    job=int.pattern,
+    nc::quantifier("_", task.pattern, "?"),
+    nc::quantifier("[.]", type=".*", "?")),
+  ExitCode=list(
+    ## DerivedExitCode: The highest exit code returned by the job's job
+    ## steps (srun invocations). Following the colon is the signal that
+    ## caused the process to terminate if it was terminated by a signal.
+    ## The DerivedExitCode can be modified by invoking sacctmgr modify
+    ## job or the specialized sjobexitmod command.
+    before=int.pattern,
+    ":",
+    after=int.pattern),
+  Elapsed=list(
+    nc::quantifier(days.only="[0-9]+", na.as.zero, "-", "?"),
+    nc::quantifier(hours.only="[0-9]+", na.as.zero, ":", "?"),
+    minutes.only=int.pattern,
+    ":",
+    seconds.only=int.pattern),
+  MaxRSS=list(
+    amount="[.0-9]+", as.numeric,
+    unit=".*",
+    nomatch.error=FALSE))
+
+### Get current fields from sacct.
+sacct_fields <- function(){
+  fields.dt <- fread(cmd="sacct -e", header=FALSE)
+  melt(fields.dt, measure.vars=names(fields.dt))$value
+### character vector.
+}
+
+### Run sacct_lines then sacct_tasks.
+sacct <- function(...){
+  sacct.dt <- sacct_lines(...)
+  sacct_tasks(sacct.dt)
+### Same as result of sacct_tasks.
+}
+
+sacct_lines <- structure(function
 ### Run sacct with args and parse output as a data.table
-sacct <- structure(function(args){
-   cmd <- paste(
-    "sacct",
-    args,
-    "--format=JobID%30,ExitCode,State%30,MaxRSS,Elapsed -P")
-  ## DerivedExitCode: The highest exit code returned by the job's job
-  ## steps (srun invocations). Following the colon is the signal that
-  ## caused the process to terminate if it was terminated by a signal.
-  ## The DerivedExitCode can be modified by invoking sacctmgr modify
-  ## job or the specialized sjobexitmod command.
-  sacct_fread(cmd=cmd)
+(args,
+### character string passed to sacct command line, e.g. -j123 for
+### selecting job ID 123.
+  format.fields=c("JobID","ExitCode","State","MaxRSS","Elapsed"),
+### character vector of field names to pass to sacct --format. Use
+### sacct_fields to get all fields.
+  delimiter="\t"
+### passed as --delimiter.
+){
+  cmd <- sprintf(
+    "sacct -P %s --delimiter='%s' --format=%s",
+    args, delimiter, paste(format.fields, collapse=","))
+  line.vec <- system(cmd, intern=TRUE)
+  print(cmd)
+  print(line.vec)
+  sacct_fread(text=line.vec, sep=delimiter)
+### Same as sacct_fread.
 }, ex=function(){
 
   if(FALSE){
@@ -20,50 +84,32 @@ sacct <- structure(function(args){
 
 ### Run fread on the output of sacct.
 sacct_fread <- structure(function(...){
+  name.dt <- fread(..., nrows=0)
+  colClasses <- list(character=names(name.dt))
+  sacct.dt <- fread(..., colClasses=colClasses, fill=TRUE)
+  if(nrow(sacct.dt)==0)return(sacct.dt)
+  some.names <- intersect(names(sacct.dt), names(sacct.pattern.list))
+  arg.list <- c(
+    list(sacct.dt),
+    sacct.pattern.list[some.names])
+  do.call(nc::capture_first_df, arg.list)
+### Data table with the same number of rows as the output of the sacct
+### command, and additional columns that result from parsing the
+### columns with sacct.pattern.list.
+}, ex=function(){
+  library(slurm)
+  sacct_fread(text="JobID|ExitCode|State|MaxRSS|Elapsed
+18473217_1|0:0|RUNNING||00:03:47
+18473217_1.extern|0:0|RUNNING||00:03:47")
+})
+
+### Summarize output from sacct_fread.
+sacct_tasks <- structure(function(match.dt){
   taskN <- task1 <- JobID <- task <- task.id <- unit <-
     megabytes <- amount <- type <- type <- hours <-
       days.only <- hours.only <- minutes.only <- seconds.only <-
         job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE
-  sacct.dt <- fread(..., fill=TRUE, sep="|", colClasses=list(character=1:5))
-  if(nrow(sacct.dt)==0)return(sacct.dt)
-  ## ExitCode The exit code returned by the job script or salloc,
-  ## typically as set by the exit() function.  Following the colon is
-  ## the signal that caused the process to terminate if it was
-  ## terminated by a signal.
-  na.as.zero <- function(int.or.empty){
-    ifelse(int.or.empty=="", 0L, as.integer(int.or.empty))
-  }
-  int.pattern <- list("[0-9]+", as.integer)
-  range.pattern <- list(
-    "\\[",
-    task1=int.pattern,
-    nc::quantifier("-", taskN=int.pattern, "?"),
-    "\\]")
-  task.pattern <- list(
-    task.id=int.pattern,
-    "|",#either one task(above) or range(below)
-    range.pattern)
-  match.dt <- nc::capture_first_df(
-    sacct.dt,
-    JobID=list(
-      job=int.pattern,
-      nc::quantifier("_", task.pattern, "?"),
-      nc::quantifier("[.]", type=".*", "?")),
-    ExitCode=list(
-      before=int.pattern,
-      ":",
-      after=int.pattern),
-    Elapsed=list(
-      nc::quantifier(days.only="[0-9]+", na.as.zero, "-", "?"),
-      nc::quantifier(hours.only="[0-9]+", na.as.zero, ":", "?"),
-      minutes.only=int.pattern,
-      ":",
-      seconds.only=int.pattern),
-    MaxRSS=list(
-      amount="[.0-9]+", as.numeric,
-      unit=".*",
-      nomatch.error=FALSE))
   range.dt <- match.dt[!is.na(taskN)]
   task.dt <- rbind(
     if(nrow(range.dt))range.dt[, {
@@ -110,12 +156,9 @@ sacct_fread <- structure(function(...){
   sacct.csv.gz <- system.file(
     "data", "sacct-job13936577.csv.gz", package="slurm", mustWork=TRUE)
   cmd <- paste("zcat", sacct.csv.gz)
-  task.dt <- sacct_fread(cmd=cmd)
+  sacct.dt <- sacct_fread(cmd=cmd)
+  task.dt <- sacct_tasks(sacct.dt)
   task.dt[State_batch != "COMPLETED"]
-
-  sacct_fread(text="JobID|ExitCode|State|MaxRSS|Elapsed
-18473217_1|0:0|RUNNING||00:03:47
-18473217_1.extern|0:0|RUNNING||00:03:47")
 
   if(require(ggplot2)){
     ggplot()+

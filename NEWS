@@ -1,3 +1,7 @@
+2019.12.11
+
+new functions sacct_lines, sacct_fields, sacct_tasks.
+
 2019.12.10
 
 colClasses=character in sacct_fread.

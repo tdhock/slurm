@@ -1,0 +1,4 @@
+Account|User|JobID|Start|End|AllocCPUS|Elapsed|AllocTRES|CPUTime|AveRSS|MaxRSS|MaxRSSTask|MaxRSSNode|NodeList|ExitCode|State
+rpp-kenclark_cpu|icecube10|32641375|2019-12-11T18:39:02|2019-12-11T19:39:31|1|01:00:29|billing=1,cpu=1,mem=7996M,node=1|01:00:29|||||cdr560|0:0|TIMEOUT
+rpp-kenclark_cpu||32641375.batch|2019-12-11T18:39:02|2019-12-11T19:39:34|1|01:00:32|cpu=1,mem=7996M,node=1|01:00:32|276869K|276869K|0|cdr560|cdr560|0:15|CANCELLED
+rpp-kenclark_cpu||32641375.extern|2019-12-11T18:39:02|2019-12-11T19:39:31|1|01:00:29|billing=1,cpu=1,mem=7996M,node=1|01:00:29|502K|502K|0|cdr560|cdr560|0:0|COMPLETED

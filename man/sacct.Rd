@@ -1,24 +1,18 @@
 \name{sacct}
 \alias{sacct}
 \title{sacct}
-\description{Run sacct with \code{args} and parse output as a data.table}
-\usage{sacct(args)}
+\description{Run \code{\link{sacct_lines}} then \code{\link{sacct_tasks}}.}
+\usage{sacct(...)}
 \arguments{
-  \item{args}{
+  \item{\dots}{
 }
 }
 
-
+\value{Same as result of \code{\link{sacct_tasks}}.}
 
 \author{Toby Dylan Hocking}
 
 
 
 
-\examples{
 
-if(FALSE){
-  sacct("-j123,456")
-}
-
-}
