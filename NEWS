@@ -1,6 +1,12 @@
+2019.12.11
+
+new functions sacct_lines, sacct_fields, sacct_tasks.
+
 2019.12.10
 
 colClasses=character in sacct_fread.
+
+simplify/clarify sacct_fread using nc::quantifier.
 
 2019.11.21
 

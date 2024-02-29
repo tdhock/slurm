@@ -11,8 +11,8 @@ echo Copying $PKG to $RELEASE
 rm -rf $RELEASE
 cp -r $PKG $RELEASE
 
-# echo Editing $RELEASE for CRAN submission
-# grep -v Remotes $PKG/DESCRIPTION > $RELEASE/DESCRIPTION
+echo Editing $RELEASE for CRAN submission
+grep -v Remotes $PKG/DESCRIPTION > $RELEASE/DESCRIPTION
 # rm $RELEASE/tests/testthat/*
 # cp $PKG/tests/testthat/test-CRAN*.R $RELEASE/tests/testthat
 
