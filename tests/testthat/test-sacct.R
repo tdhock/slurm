@@ -38,3 +38,11 @@ test_that("all NA column read as character", {
   expect_equal(task.dt$task, 1:999)
 })
 
+test_that("all NA column read as character", {
+  sacct.txt <- system.file(
+    "extdata", "slurm-dcast-agg.txt", package="slurm", mustWork=TRUE)
+  task.dt <- sacct_fread(file=sacct.txt)
+  st.tab <- table(task.dt$State_blank)
+  expect_identical(names(st.tab), c("FAILED", "OUT_OF_MEMORY", "PENDING", "RUNNING"))
+})
+

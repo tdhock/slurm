@@ -103,14 +103,18 @@ sacct_fread <- structure(function(...){
       minutes.only/60 +
       seconds.only/60/60
   }]
+  running.dt <- task.dt[State=="RUNNING"]
+  not.running <- task.dt[State!="RUNNING"]
+  some.not <- not.running[!running.dt, on=c("job","task")]
+  uniq.tasks <- rbind(running.dt, some.not)
   wide.dt <- dcast(
-    task.dt,
+    uniq.tasks,
     job + task ~ type,
     value.var=c("State", "ExitCode"))
-  rss.dt <- task.dt[type=="batch", {
+  rss.dt <- uniq.tasks[type=="batch", {
     list(job, task, megabytes)
   }][wide.dt, on=list(job, task)]
-  time.dt <- task.dt[type=="blank", {
+  time.dt <- uniq.tasks[type=="blank", {
     list(job, task, Elapsed, hours)
   }][rss.dt, on=list(job, task)]
   time.dt
