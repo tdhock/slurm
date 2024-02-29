@@ -70,8 +70,6 @@ sacct_lines <- structure(function
     "sacct -P %s --delimiter='%s' --format=%s",
     args, delimiter, paste(format.fields, collapse=","))
   line.vec <- system(cmd, intern=TRUE)
-  print(cmd)
-  print(line.vec)
   sacct_fread(text=line.vec, sep=delimiter)
 ### Same as sacct_fread.
 }, ex=function(){
