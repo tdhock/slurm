@@ -4,8 +4,7 @@
 \description{Convert empty string to zero and use as.integer otherwise.}
 \usage{na.as.zero(int.or.empty)}
 \arguments{
-  \item{int.or.empty}{
-}
+  \item{int.or.empty}{int.or.empty }
 }
 
 

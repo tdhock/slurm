@@ -5,10 +5,8 @@
 \usage{sjob(job.id = sq.jobs(), 
     tasks.width = 11)}
 \arguments{
-  \item{job.id}{
-}
-  \item{tasks.width}{
-}
+  \item{job.id}{job.id }
+  \item{tasks.width}{tasks.width }
 }
 
 

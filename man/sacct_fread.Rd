@@ -4,8 +4,7 @@
 \description{Run fread on the output of \code{\link{sacct}}.}
 \usage{sacct_fread(...)}
 \arguments{
-  \item{\dots}{
-}
+  \item{\dots}{\dots }
 }
 
 \value{Data table with the same number of rows as the output of the \code{\link{sacct}}

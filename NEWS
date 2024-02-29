@@ -1,19 +1,21 @@
-2019.12.11
+Changes in version 2024.2.29
 
-new functions sacct_lines, sacct_fields, sacct_tasks.
+- sacct_tasks ignores rows with other State values, for tasks that have at least one RUNNING row.
 
-2019.12.10
+Changes in version 2019.12.11
 
-colClasses=character in sacct_fread.
+- new functions sacct_lines, sacct_fields, sacct_tasks.
 
-simplify/clarify sacct_fread using nc::quantifier.
+Changes in version 2019.12.10
 
-2019.11.21
+- colClasses=character in sacct_fread.
+- simplify/clarify sacct_fread using nc::quantifier.
 
-namedCapture->nc.
+Changes in version 2019.11.21
 
-update regex in sacct_fread so that both job ID suffixes are optional.
+- namedCapture->nc.
+- update regex in sacct_fread so that both job ID suffixes are optional.
 
-2018.11.18
+Changes in version 2018.11.18
 
-first version?
+- first version?

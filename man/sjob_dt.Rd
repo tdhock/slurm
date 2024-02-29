@@ -4,10 +4,8 @@
 \description{Get summary dt from \code{\link{sacct}} dt.}
 \usage{sjob_dt(time.dt, tasks.width = 11)}
 \arguments{
-  \item{time.dt}{
-}
-  \item{tasks.width}{
-}
+  \item{time.dt}{time.dt }
+  \item{tasks.width}{tasks.width }
 }
 
 \value{data.table summarizing State/ExitCode distribution over jobs}

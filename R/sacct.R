@@ -106,7 +106,7 @@ sacct_fread <- structure(function(...){
 ### Summarize output from sacct_fread.
 sacct_tasks <- structure(function(match.dt){
   taskN <- task1 <- JobID <- task <- task.id <- unit <-
-    megabytes <- amount <- type <- type <- hours <-
+    megabytes <- amount <- type <- type <- hours <- State <- 
       days.only <- hours.only <- minutes.only <- seconds.only <-
         job <- task <- Elapsed <- NULL
   ## above to avoid CRAN NOTE

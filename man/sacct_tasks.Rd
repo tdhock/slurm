@@ -4,8 +4,7 @@
 \description{Summarize output from \code{\link{sacct_fread}}.}
 \usage{sacct_tasks(match.dt)}
 \arguments{
-  \item{match.dt}{
-}
+  \item{match.dt}{match.dt }
 }
 
 \value{data.table with one row per job/task.}
