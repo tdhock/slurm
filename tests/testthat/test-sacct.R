@@ -73,4 +73,14 @@ test_that("sacct works with all columns", {
   sacct.txt <- system.file(
     "extdata", "sacct-all-cols.txt", package="slurm", mustWork=TRUE)
   sacct.dt <- sacct_fread(sacct.txt)
+  expect_is(sacct.dt, "data.table")
 })
+
+test_that("sacct works with all columns", {
+  raw.csv <- system.file(
+    "extdata", "sacct_tasks_input_multi_state.csv", package="slurm", mustWork=TRUE)
+  raw.dt <- data.table::fread(raw.csv)
+  task.dt <- sacct_tasks(raw.dt)
+  expect_is(task.dt$State_blank, "character")
+})
+

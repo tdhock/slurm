@@ -1,6 +1,6 @@
-Changes in version 2024.2.29
+Changes in version 2024.3.1
 
-- sacct_tasks ignores rows with other State values, for tasks that have at least one RUNNING row.
+- sacct_tasks ignores rows with PENDING State, for tasks that have at least one row with another State value.
 
 Changes in version 2019.12.11
 

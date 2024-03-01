@@ -136,14 +136,19 @@ sacct_tasks <- structure(function(match.dt){
       minutes.only/60 +
       seconds.only/60/60
   }]
-  running.dt <- task.dt[State=="RUNNING"]
-  not.running <- task.dt[State!="RUNNING"]
-  some.not <- not.running[!running.dt, on=c("job","task")]
-  uniq.tasks <- rbind(running.dt, some.not)
+  pending.dt <- task.dt[State=="PENDING"]
+  not.pending <- task.dt[State!="PENDING"]
+  only.pending <- pending.dt[!not.pending, on=c("job","task")]
+  uniq.tasks <- rbind(only.pending, not.pending)
   wide.dt <- dcast(
     uniq.tasks,
     job + task ~ type,
     value.var=c("State", "ExitCode"))
+  if(is.numeric(wide.dt$State_blank)){
+    bad.jobs <- wide.dt[State_blank>1, job]
+    print(match.dt[job %in% bad.jobs])
+    stop("some jobs were not parsed correctly")
+  }
   rss.dt <- uniq.tasks[type=="batch", {
     list(job, task, megabytes)
   }][wide.dt, on=list(job, task)]

@@ -1,0 +1,5 @@
+JobID,ExitCode,State,MaxRSS,Elapsed,job,task.id,task1,taskN,type,before,after,amount,unit,days.only,hours.only,minutes.only,seconds.only
+8046989_7436,1:0,FAILED,"",00:00:16,8046989,7436,,,"",1,0,,,0,0,0,16
+8046989_7436.batch,1:0,FAILED,0,00:00:16,8046989,7436,,,batch,1,0,0,"",0,0,0,16
+8046989_7436.extern,0:0,COMPLETED,0,00:00:16,8046989,7436,,,extern,0,0,0,"",0,0,0,16
+8046989_[7003-8081],0:0,PENDING,"",00:00:00,8046989,,7003,8081,"",0,0,,,0,0,0,0
