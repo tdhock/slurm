@@ -106,7 +106,7 @@ sacct_tasks <- structure(function(match.dt){
   taskN <- task1 <- JobID <- task <- task.id <- unit <-
     megabytes <- amount <- type <- type <- hours <- State <- 
       days.only <- hours.only <- minutes.only <- seconds.only <-
-        job <- task <- Elapsed <- NULL
+        job <- task <- Elapsed <- State_blank <- NULL
   ## above to avoid CRAN NOTE
   range.dt <- match.dt[!is.na(taskN)]
   task.dt <- rbind(
