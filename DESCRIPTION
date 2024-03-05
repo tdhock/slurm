@@ -11,7 +11,7 @@ Description:  User-friendly functions which parse output of
 Imports:
  data.table (>= 1.11.6),
  nc (>= 2019.11.22)
-SystemRequirements: SLURM command line programs (sacct, squeue)
+SystemRequirements: Slurm command line programs (sacct, squeue)
 Suggests:
  testthat,
  ggplot2,
