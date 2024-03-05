@@ -20,8 +20,9 @@
 library(slurm)
 sacct.csv.gz <- system.file(
   "data", "sacct-job13936577.csv.gz", package="slurm", mustWork=TRUE)
-cmd <- paste("zcat", sacct.csv.gz)
-task.dt <- sacct_fread(cmd=cmd)
-(summary.dt <- sjob_dt(task.dt))
+if(requireNamespace("R.utils")){
+  task.dt <- sacct_fread(sacct.csv.gz)
+  print(summary.dt <- sjob_dt(task.dt))
+}
 
 }

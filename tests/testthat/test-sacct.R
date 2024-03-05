@@ -9,29 +9,6 @@ test_that("sacct_fread works for prev unrecognized unit", {
   expect_is(dt, "data.table")
 })
 
-test_that("job ID field parsed correctly", {
-  sacct.csv.gz <- system.file(
-    "data", "sacct-multitype.csv.gz", package="slurm", mustWork=TRUE)
-  cmd <- paste("zcat", sacct.csv.gz)
-  sacct.dt <- sacct_fread(cmd=cmd)
-  task.dt <- sacct_tasks(sacct.dt)
-  ord.dt <- task.dt[order(job, task)]
-  expect_identical(ord.dt$job, as.integer(c(
-    13937810, 14022192, 14022192, 14022192, 14022204)))
-  expect_identical(ord.dt$task, as.integer(c(
-    25, 1, 2, 3, 4)))
-})
-
-test_that("job ID suffixes both optional", {
-  sacct.csv.gz <- system.file(
-    "data", "sacct-2019-11-21.csv.gz", package="slurm", mustWork=TRUE)
-  cmd <- paste("zcat", sacct.csv.gz)
-  sacct.dt <- sacct_fread(cmd=cmd)
-  task.dt <- sacct_tasks(sacct.dt)
-  task.uniq <- unique(task.dt[, .(job, task)])
-  expect_equal(nrow(task.dt), nrow(task.uniq))
-})
-
 test_that("all NA column read as character", {
   sacct.txt <- system.file(
     "extdata", "sacct-multistep.txt", package="slurm", mustWork=TRUE)
@@ -83,4 +60,26 @@ test_that("sacct works with all columns", {
   task.dt <- sacct_tasks(raw.dt)
   expect_is(task.dt$State_blank, "character")
 })
+
+if(requireNamespace("R.utils")){
+  test_that("job ID field parsed correctly", {
+    sacct.csv.gz <- system.file(
+      "data", "sacct-multitype.csv.gz", package="slurm", mustWork=TRUE)
+    sacct.dt <- sacct_fread(sacct.csv.gz)
+    task.dt <- sacct_tasks(sacct.dt)
+    ord.dt <- task.dt[order(job, task)]
+    expect_identical(ord.dt$job, as.integer(c(
+      13937810, 14022192, 14022192, 14022192, 14022204)))
+    expect_identical(ord.dt$task, as.integer(c(
+      25, 1, 2, 3, 4)))
+  })
+  test_that("job ID suffixes both optional", {
+    sacct.csv.gz <- system.file(
+      "data", "sacct-2019-11-21.csv.gz", package="slurm", mustWork=TRUE)
+    sacct.dt <- sacct_fread(sacct.csv.gz)
+    task.dt <- sacct_tasks(sacct.dt)
+    task.uniq <- unique(task.dt[, .(job, task)])
+    expect_equal(nrow(task.dt), nrow(task.uniq))
+  })
+}
 

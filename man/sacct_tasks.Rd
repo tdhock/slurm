@@ -19,22 +19,22 @@
 library(slurm)
 sacct.csv.gz <- system.file(
   "data", "sacct-job13936577.csv.gz", package="slurm", mustWork=TRUE)
-cmd <- paste("zcat", sacct.csv.gz)
-sacct.dt <- sacct_fread(cmd=cmd)
-task.dt <- sacct_tasks(sacct.dt)
-task.dt[State_batch != "COMPLETED"]
-
-if(require(ggplot2)){
-  ggplot()+
-    geom_point(aes(
-      hours, megabytes, fill=State_batch),
-      shape=21,
-      data=task.dt)+
-    scale_fill_manual(values=c(
-      COMPLETED=NA,
-      FAILED="red"))+
-    scale_x_log10()+
-    scale_y_log10()
+if(requireNamespace("R.utils")){
+  sacct.dt <- sacct_fread(sacct.csv.gz)
+  task.dt <- sacct_tasks(sacct.dt)
+  print(task.dt[State_batch != "COMPLETED"])
+  if(require(ggplot2)){
+    ggplot()+
+      geom_point(aes(
+        hours, megabytes, fill=State_batch),
+        shape=21,
+        data=task.dt)+
+      scale_fill_manual(values=c(
+        COMPLETED=NA,
+        FAILED="red"))+
+      scale_x_log10()+
+      scale_y_log10()
+  }
 }
 
 }
