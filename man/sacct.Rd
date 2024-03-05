@@ -9,7 +9,7 @@
 
 \value{Same as result of \code{\link{sacct_tasks}}.}
 
-\author{Toby Dylan Hocking}
+\author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 
 
 

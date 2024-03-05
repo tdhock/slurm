@@ -16,7 +16,7 @@ selecting job ID 123.}
 
 \value{Same as \code{\link{sacct_fread}}.}
 
-\author{Toby Dylan Hocking}
+\author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 
 
 

@@ -7,9 +7,9 @@ Version: 2024.3.5
 License: GPL-3
 Title: Running and Parsing SLURM Commands
 Description:  User-friendly functions which parse output of
- command line programs used to query Slurm,
+ command line programs used to query Slurm.
  Morris A. Jette and Tim Wickberg (2023)
- <doi:10.1007/978-3-031-43943-8_1>
+ <doi:10.1007/978-3-031-43943-8_1> describe Slurm in detail.
 Imports:
  data.table (>= 1.11.6),
  nc (>= 2019.11.22)

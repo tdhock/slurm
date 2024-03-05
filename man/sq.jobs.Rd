@@ -9,7 +9,7 @@
 
 \value{character scalar: job1,job2,etc}
 
-\author{Toby Dylan Hocking}
+\author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 
 
 

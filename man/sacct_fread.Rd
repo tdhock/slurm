@@ -11,7 +11,7 @@
 command, and additional columns that result from parsing the
 columns with \code{\link{sacct.pattern.list}}.}
 
-\author{Toby Dylan Hocking}
+\author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 
 
 
