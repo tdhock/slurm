@@ -5,7 +5,7 @@ Authors@R: c(
      role=c("aut", "cre")))
 Version: 2024.3.5
 License: GPL-3
-Title: Running and Parsing SLURM Commands
+Title: Running and Parsing Slurm Commands
 Description:  User-friendly functions which parse output of
  command line programs used to query Slurm.
  Morris A. Jette and Tim Wickberg (2023)
