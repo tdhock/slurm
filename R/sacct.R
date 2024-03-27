@@ -29,7 +29,8 @@ sacct.pattern.list <- list(
     ## job or the specialized sjobexitmod command.
     before=int.pattern,
     ":",
-    after=int.pattern),
+    after=int.pattern,
+    nomatch.error=FALSE),
   Elapsed=list(
     nc::quantifier(days.only="[0-9]+", na.as.zero, "-", "?"),
     nc::quantifier(hours.only="[0-9]+", na.as.zero, ":", "?"),
@@ -55,7 +56,7 @@ sacct <- function(...){
 ### Same as result of sacct_tasks.
 }
 
-sacct_lines <- structure(function
+sacct_lines <- function
 ### Run sacct with args and parse output as a data.table
 (args,
 ### character string passed to sacct command line, e.g. -j123 for
@@ -72,13 +73,7 @@ sacct_lines <- structure(function
   line.vec <- system(cmd, intern=TRUE)
   sacct_fread(text=line.vec, sep=delimiter)
 ### Same as sacct_fread.
-}, ex=function(){
-
-  if(FALSE){
-    sacct("-j123,456")
-  }
-
-})
+}
 
 ### Run fread on the output of sacct.
 sacct_fread <- structure(function(...){
@@ -117,6 +112,7 @@ sacct_tasks <- structure(function(match.dt){
       data.table(.SD, task=ifelse(is.na(task.id), task1, task.id))
     }])
   amount.per.megabyte <- c(
+    G=1/1024,
     K=1024,
     M=1)
   task.dt[, megabytes := ifelse(

@@ -21,10 +21,4 @@ selecting job ID 123.}
 
 
 
-\examples{
 
-if(FALSE){
-  sacct("-j123,456")
-}
-
-}
