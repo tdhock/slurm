@@ -199,9 +199,7 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
   by.vars <- c(
     col.name.list$State,
     "ExitCodes",
-    if(1 < length(unique(time.dt$JobID.job))){
-      "JobID.job"
-    })
+    if(1 < length(unique(time.dt$job)))"job")
   time.dt[, {
     list(
       count=.N,
@@ -213,7 +211,7 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
           tasks.long)
       }
     )
-  }, by=by.vars]
+  }, keyby=by.vars]
 ### data.table summarizing State/ExitCode distribution over jobs
 }, ex=function(){
 
