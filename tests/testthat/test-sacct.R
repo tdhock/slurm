@@ -82,6 +82,9 @@ if(requireNamespace("R.utils")){
     task.dt <- sacct_tasks(sacct.dt)
     task.uniq <- unique(task.dt[, .(job, task)])
     expect_equal(nrow(task.dt), nrow(task.uniq))
+    summary.dt <- sjob_dt(task.dt)
+    expect_equal(summary.dt$job[1:3], c(26534569L, 26534608L, 26534608L))
+    expect_equal(summary.dt$State_batch[1:3], c(NA,NA,"COMPLETED"))
   })
 }
 

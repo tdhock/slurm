@@ -198,9 +198,9 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
   paste.args <- as.list(time.dt[, col.name.list$ExitCode, with=FALSE])
   time.dt[, ExitCodes := do.call(paste, paste.args)]
   by.vars <- c(
+    "job",
     col.name.list$State,
-    "ExitCodes",
-    if(1 < length(unique(time.dt$job)))"job")
+    "ExitCodes")
   time.dt[, {
     list(
       count=.N,
