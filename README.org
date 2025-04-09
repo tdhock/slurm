@@ -5,6 +5,9 @@ Functions for monitoring the status of SLURM jobs.
 ** Installation
 
 #+BEGIN_SRC R
+  ## Install release version from CRAN:
+  install.packages("slurm")
+  ## or development version from GitHub:
   remotes::install_github("tdhock/slurm")
 #+END_SRC
 
@@ -14,20 +17,73 @@ These R commands only work on cluster systems which have the slurm
 command line programs (sacct, squeue).
 
 #+BEGIN_SRC R
-  ## Run sacct to get info for all tasks associated with two jobs.
-  task.dt <- sacct("-j123,456")
-
-  ## Summarize states/exitCodes for each task.
-  (summary.dt <- sjob_dt(task.dt))
-
   ## Run squeue/sacct to get currently running jobs and summarize their
   ## states/exitCodes.
-  (current.dt <- sjob())
+  slurm::sjob()
+
+  ## Run sacct to get info for all tasks associated with two jobs.
+  (task.dt <- slurm::sacct('-j16376022,16376023'))
+
+  ## Summarize states/exitCodes for each task.
+  slurm::sjob_dt(task.dt)
+
 #+END_SRC
+
+Example output:
+
+#+begin_src R
+  > slurm::sjob() #summary of all jobs running for current user.
+  Key: <State_batch, State_blank, State_extern, ExitCodes, job>
+       State_batch   State_blank State_extern       ExitCodes      job count      tasks
+	    <char>        <char>       <char>          <char>    <int> <int>     <char>
+  1:          <NA>       PENDING         <NA>       NA 0:0 NA 16376025     1         NA
+  2:     COMPLETED     COMPLETED    COMPLETED     0:0 0:0 0:0 16376022  1571 1,2,3,4,5,
+  3:     COMPLETED     COMPLETED    COMPLETED     0:0 0:0 0:0 16376023    22  45,60,66,
+  4: OUT_OF_MEMORY OUT_OF_MEMORY    COMPLETED 0:125 0:125 0:0 16376022     2   497,1030
+  5:       RUNNING       RUNNING      RUNNING     0:0 0:0 0:0 16376022     8   267,492,
+  6:       RUNNING       RUNNING      RUNNING     0:0 0:0 0:0 16376023     1       1244
+  > (task.dt <- slurm::sacct('-j16376022,16376023')) #one row for each task with given job ID.
+	     job  task  Elapsed      hours megabytes State_batch State_blank State_extern
+	   <int> <int>   <char>      <num>     <num>      <char>      <char>       <char>
+     1: 16376022     1 00:03:58 0.06611111  290.4453   COMPLETED   COMPLETED    COMPLETED
+     2: 16376022     2 00:07:33 0.12583333  897.4180   COMPLETED   COMPLETED    COMPLETED
+     3: 16376022     3 00:13:54 0.23166667  432.5312   COMPLETED   COMPLETED    COMPLETED
+     4: 16376022     4 00:07:59 0.13305556  334.0977   COMPLETED   COMPLETED    COMPLETED
+     5: 16376022     5 00:31:01 0.51694444  382.7617   COMPLETED   COMPLETED    COMPLETED
+    ---                                                                                  
+  1600: 16376023  1278 00:52:42 0.87833333 4732.3555   COMPLETED   COMPLETED    COMPLETED
+  1601: 16376023  1299 02:08:57 2.14916667 4255.4062   COMPLETED   COMPLETED    COMPLETED
+  1602: 16376023  1480 00:49:12 0.82000000 1970.8828   COMPLETED   COMPLETED    COMPLETED
+  1603: 16376023  1506 01:34:35 1.57638889 5445.1797   COMPLETED   COMPLETED    COMPLETED
+  1604: 16376023  1513 00:53:42 0.89500000 3619.9844   COMPLETED   COMPLETED    COMPLETED
+	ExitCode_batch ExitCode_blank ExitCode_extern
+		<char>         <char>          <char>
+     1:            0:0            0:0             0:0
+     2:            0:0            0:0             0:0
+     3:            0:0            0:0             0:0
+     4:            0:0            0:0             0:0
+     5:            0:0            0:0             0:0
+    ---                                              
+  1600:            0:0            0:0             0:0
+  1601:            0:0            0:0             0:0
+  1602:            0:0            0:0             0:0
+  1603:            0:0            0:0             0:0
+  1604:            0:0            0:0             0:0
+  > slurm::sjob_dt(task.dt) #convert to summary table with one row per state.
+  Key: <State_batch, State_blank, State_extern, ExitCodes, job>
+       State_batch   State_blank State_extern       ExitCodes      job count      tasks
+	    <char>        <char>       <char>          <char>    <int> <int>     <char>
+  1:     COMPLETED     COMPLETED    COMPLETED     0:0 0:0 0:0 16376022  1571 1,2,3,4,5,
+  2:     COMPLETED     COMPLETED    COMPLETED     0:0 0:0 0:0 16376023    22  45,60,66,
+  3: OUT_OF_MEMORY OUT_OF_MEMORY    COMPLETED 0:125 0:125 0:0 16376022     2   497,1030
+  4:       RUNNING       RUNNING      RUNNING     0:0 0:0 0:0 16376022     8   267,492,
+  5:       RUNNING       RUNNING      RUNNING     0:0 0:0 0:0 16376023     1       1244
+#+end_src
 
 ** Related work
 
-For launching SLURM jobs from R,
+This package does not provide functions for launching SLURM jobs.
+To do that from R, you can try:
 - [[https://github.com/mllg/batchtools][batchtools]] "parallel implementation of Map for high performance
   computing systems managed by schedulers like Slurm."
 - [[https://github.com/mschubert/clustermq][clustermq]] "send function calls as jobs on a computing cluster with a
