@@ -1,14 +1,17 @@
 Functions for monitoring the status of SLURM jobs.
 
-[[https://travis-ci.org/tdhock/slurm][https://travis-ci.org/tdhock/slurm.png?branch=master]]
+[[https://github.com/tdhock/slurm/actions][https://github.com/tdhock/slurm/workflows/R-CMD-check/badge.svg]]
 
 ** Installation
 
 #+BEGIN_SRC R
-devtools::install_github("tdhock/slurm")
+  remotes::install_github("tdhock/slurm")
 #+END_SRC
 
 ** Usage
+
+These R commands only work on cluster systems which have the slurm
+command line programs (sacct, squeue).
 
 #+BEGIN_SRC R
   ## Run sacct to get info for all tasks associated with two jobs.
@@ -25,5 +28,13 @@ devtools::install_github("tdhock/slurm")
 ** Related work
 
 For launching SLURM jobs from R,
-- [[https://github.com/SESYNC-ci/rslurm][rslurm]]
-- [[https://github.com/mllg/batchtools][batchtools]]
+- [[https://github.com/mllg/batchtools][batchtools]] "parallel implementation of Map for high performance
+  computing systems managed by schedulers like Slurm."
+- [[https://github.com/mschubert/clustermq][clustermq]] "send function calls as jobs on a computing cluster with a
+  minimal interface provided by the Q function."
+- [[https://github.com/ropensci/rzmq][rzmq]] ROpenSci "Interface to the 'ZeroMQ' lightweight messaging kernel."
+- [[https://github.com/USCbiostats/slurmR][slurmR]] "matches the parallel package’s syntax, this is, just like
+  parallel provides the parLapply, clusterMap, parSapply, etc., slurmR
+  provides Slurm_lapply, Slurm_Map, Slurm_sapply, etc."
+- [[https://github.com/snoweye/pbdZMQ][pbdZMQ]] "simplified interface to ZeroMQ with a focus on client/server programming frameworks."
+- [[https://github.com/SESYNC-ci/rslurm][rslurm]] "submit R code to a Slurm cluster."
