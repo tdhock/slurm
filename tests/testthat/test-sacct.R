@@ -59,6 +59,8 @@ test_that("sacct works with all columns", {
   raw.dt <- data.table::fread(raw.csv)
   task.dt <- sacct_tasks(raw.dt)
   expect_is(task.dt$State_blank, "character")
+  summary.dt <- sjob_dt(task.dt)
+  expect_equal(summary.dt$job, rep(8046989L, 2))
 })
 
 if(requireNamespace("R.utils")){
