@@ -1,3 +1,7 @@
+Changes in version 2025.4.9
+
+- Minor changes (docs, error) for first CRAN submission.
+
 Changes in version 2024.3.5
 
 - if(requireNamespace("R.utils"))sacct_fread("file.gz") instead of sacct_fread(cmd="zcat file.gz") in examples and tests.

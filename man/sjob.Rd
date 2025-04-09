@@ -9,7 +9,7 @@
   \item{tasks.width}{tasks.width }
 }
 
-
+\value{Data table from \code{\link{sjob_dt}}.}
 
 \author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 

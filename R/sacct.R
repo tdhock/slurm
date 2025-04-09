@@ -1,6 +1,7 @@
 ### Convert empty string to zero and use as.integer otherwise.
 na.as.zero <- function(int.or.empty){
   ifelse(int.or.empty=="", 0L, as.integer(int.or.empty))
+### Integer vector.
 }
 
 ### Match one or more digits and convert to integer.
@@ -142,8 +143,7 @@ sacct_tasks <- structure(function(match.dt){
     value.var=c("State", "ExitCode"))
   if(is.numeric(wide.dt$State_blank)){
     bad.jobs <- wide.dt[State_blank>1, job]
-    print(match.dt[job %in% bad.jobs])
-    stop("some jobs were not parsed correctly")
+    stop("some jobs were not parsed correctly inside sacct_tasks. Please use dput() on the data table output from sacct_lines(), and report as an issue on the github issue tracker")
   }
   rss.dt <- uniq.tasks[type=="batch", {
     list(job, task, megabytes)
@@ -182,6 +182,7 @@ sacct_tasks <- structure(function(match.dt){
 sjob <- function(job.id=sq.jobs(), tasks.width=11){
   sacct.dt <- sacct(paste0("-j", job.id))
   sjob_dt(sacct.dt, tasks.width=tasks.width)
+### Data table from sjob_dt.
 }
 
 ### Get summary dt from sacct dt.

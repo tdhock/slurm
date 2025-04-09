@@ -7,7 +7,7 @@
   \item{int.or.empty}{int.or.empty }
 }
 
-
+\value{Integer vector.}
 
 \author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 
