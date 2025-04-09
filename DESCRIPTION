@@ -3,7 +3,7 @@ Authors@R: c(
     person("Toby", "Hocking",
      email="toby.hocking@r-project.org",
      role=c("aut", "cre")))
-Version: 2025.4.9
+Version: 2025.4.10
 License: GPL-3
 Title: Running and Parsing Slurm Commands
 Description:  User-friendly functions which parse output of

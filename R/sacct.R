@@ -89,7 +89,9 @@ sacct_fread <- structure(function(...){
   do.call(nc::capture_first_df, arg.list)
 ### Data table with the same number of rows as the output of the sacct
 ### command, and additional columns that result from parsing the
-### columns with sacct.pattern.list.
+### columns with sacct.pattern.list. This table typically has more
+### than one row per task, so typically this table is used as input to
+### sacct_tasks.
 }, ex=function(){
   library(slurm)
   sacct_fread(text="JobID|ExitCode|State|MaxRSS|Elapsed
@@ -97,7 +99,7 @@ sacct_fread <- structure(function(...){
 18473217_1.extern|0:0|RUNNING||00:03:47")
 })
 
-### Summarize output from sacct_fread.
+### Use output of sacct_fread to compute a table with one row per task.
 sacct_tasks <- structure(function(match.dt){
   taskN <- task1 <- JobID <- task <- task.id <- unit <-
     megabytes <- amount <- type <- type <- hours <- State <- 
@@ -152,7 +154,8 @@ sacct_tasks <- structure(function(match.dt){
     list(job, task, Elapsed, hours)
   }][rss.dt, on=list(job, task)]
   time.dt
-### data.table with one row per job/task.
+### data.table with one row per job/task, typically used as input to
+### sjob_dt.
 }, ex=function(){
 
   library(slurm)
@@ -185,7 +188,7 @@ sjob <- function(job.id=sq.jobs(), tasks.width=11){
 ### Data table from sjob_dt.
 }
 
-### Get summary dt from sacct dt.
+### Summarize task table from sacct_tasks.
 sjob_dt <- structure(function(time.dt, tasks.width=11){
   ExitCodes <- task <- NULL
   ## above to avoid CRAN NOTE
@@ -198,9 +201,9 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
   paste.args <- as.list(time.dt[, col.name.list$ExitCode, with=FALSE])
   time.dt[, ExitCodes := do.call(paste, paste.args)]
   by.vars <- c(
+    "job",
     col.name.list$State,
-    "ExitCodes",
-    if(1 < length(unique(time.dt$job)))"job")
+    "ExitCodes")
   time.dt[, {
     list(
       count=.N,
@@ -213,7 +216,8 @@ sjob_dt <- structure(function(time.dt, tasks.width=11){
       }
     )
   }, keyby=by.vars]
-### data.table summarizing State/ExitCode distribution over jobs
+### data.table with one row per unique value of job/State/ExitCode
+### (and keyed on these columns).
 }, ex=function(){
 
   library(slurm)

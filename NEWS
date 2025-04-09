@@ -1,3 +1,7 @@
+Changes in version 2025.4.10 (PR#4)
+
+- sjob_dt() output always has job column, which is first element of key.
+
 Changes in version 2025.4.9
 
 - Minor changes (docs, error) for first CRAN submission.
