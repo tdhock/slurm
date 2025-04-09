@@ -1,13 +1,14 @@
 \name{sacct_tasks}
 \alias{sacct_tasks}
 \title{sacct tasks}
-\description{Summarize output from \code{\link{sacct_fread}}.}
+\description{Use output of \code{\link{sacct_fread}} to compute a table with one row per task.}
 \usage{sacct_tasks(match.dt)}
 \arguments{
   \item{match.dt}{match.dt }
 }
 
-\value{data.table with one row per job/task.}
+\value{data.table with one row per job/task, typically used as input to
+\code{\link{sjob_dt}}.}
 
 \author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 

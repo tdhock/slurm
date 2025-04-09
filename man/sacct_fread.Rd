@@ -9,7 +9,9 @@
 
 \value{Data table with the same number of rows as the output of the \code{\link{sacct}}
 command, and additional columns that result from parsing the
-columns with \code{\link{sacct.pattern.list}}.}
+columns with \code{\link{sacct.pattern.list}}. This table typically has more
+than one row per task, so typically this table is used as input to
+\code{\link{sacct_tasks}}.}
 
 \author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 
