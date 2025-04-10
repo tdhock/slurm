@@ -18,4 +18,5 @@ Suggests:
  testthat,
  ggplot2,
  R.utils
-
+BugReports: https://github.com/tdhock/slurm/issues
+URL: https://github.com/tdhock/slurm
