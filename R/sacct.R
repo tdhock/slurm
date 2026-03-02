@@ -11,7 +11,7 @@ int.pattern <- list("[0-9]+", as.integer)
 sacct.pattern.list <- list(
   JobID=list(
     job=int.pattern,
-    nc::quantifier("_", task.id=int.pattern, "?"),
+    nc::quantifier("_", task=int.pattern, "?"),
     nc::quantifier("[.]", type=".*", "?")),
   ExitCode=list(
     ## DerivedExitCode: The highest exit code returned by the job's job
@@ -94,20 +94,12 @@ sacct_fread <- structure(function(...){
 })
 
 ### Use output of sacct_fread to compute a table with one row per task.
-sacct_tasks <- structure(function(match.dt){
-  taskN <- task1 <- JobID <- task <- task.id <- unit <-
+sacct_tasks <- structure(function(task.dt){
+  taskN <- task1 <- JobID <- task <- unit <-
     megabytes <- amount <- type <- type <- hours <- State <- 
       days.only <- hours.only <- minutes.only <- seconds.only <-
         job <- task <- Elapsed <- State_blank <- NULL
   ## above to avoid CRAN NOTE
-  range.dt <- match.dt[!is.na(taskN)]
-  task.dt <- rbind(
-    if(nrow(range.dt))range.dt[, {
-      data.table(.SD, task=seq(task1, taskN))
-    }, by=list(JobID)],
-    match.dt[is.na(taskN), {
-      data.table(.SD, task=ifelse(is.na(task.id), task1, task.id))
-    }])
   amount.per.megabyte <- c(
     G=1/1024,
     K=1024,

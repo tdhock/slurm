@@ -3,6 +3,15 @@ library(testthat)
 context("sacct")
 
 slurm.txt <- system.file(
+  package="slurm", "extdata", "sacct-pending.txt", mustWork=TRUE)
+test_that("sacct_fread works for prev unrecognized unit", {
+  dt <- sacct_fread(slurm.txt)
+  tdt <- sacct_tasks(dt)
+  expect_is(tdt, "data.table")
+  expect_gt(nrow(tdt), 0)
+})
+
+slurm.txt <- system.file(
   "extdata", "sacct-unrecognized-unit.txt", package="slurm", mustWork=TRUE)
 test_that("sacct_fread works for prev unrecognized unit", {
   dt <- sacct_fread(slurm.txt)
@@ -36,7 +45,7 @@ test_that("sacct works with all columns", {
   expect_is(sacct.dt, "data.table")
 })
 
-test_that("sacct works with all columns", {
+test_that("sacct works with all columns multi state", {
   raw.csv <- system.file(
     "extdata", "sacct_tasks_input_multi_state.csv", package="slurm", mustWork=TRUE)
   raw.dt <- data.table::fread(raw.csv)
