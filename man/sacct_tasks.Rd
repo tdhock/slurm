@@ -2,9 +2,9 @@
 \alias{sacct_tasks}
 \title{sacct tasks}
 \description{Use output of \code{\link{sacct_fread}} to compute a table with one row per task.}
-\usage{sacct_tasks(match.dt)}
+\usage{sacct_tasks(task.dt)}
 \arguments{
-  \item{match.dt}{match.dt }
+  \item{task.dt}{task.dt }
 }
 
 \value{data.table with one row per job/task, typically used as input to

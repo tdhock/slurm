@@ -1,3 +1,8 @@
+Changes in version 2026.3.1 (PR#5)
+
+- sacct_lines() gains out_file arg, can be passed from sjob(out_file="~/sacct.txt") for debugging.
+- sacct_lines() adds --array flag so sacct does not combine tasks (easier to parse).
+
 Changes in version 2025.4.10 (PR#4)
 
 - sjob_dt() output always has job column, which is first element of key.

@@ -5,13 +5,15 @@
 \usage{sacct_lines(args, format.fields = c("JobID", 
     "ExitCode", "State", 
     "MaxRSS", "Elapsed"), 
-    delimiter = "\\t")}
+    delimiter = "\\t", 
+    out_file = getOption("slurm.sacct_lines.out_file"))}
 \arguments{
   \item{args}{character string passed to \code{\link{sacct}} command line, e.g. -j123 for
 selecting job ID 123.}
   \item{format.fields}{character vector of field names to pass to \code{\link{sacct}} --format. Use
 \code{\link{sacct_fields}} to get all fields.}
   \item{delimiter}{passed as --delimiter.}
+  \item{out_file}{out_file }
 }
 
 \value{Same as \code{\link{sacct_fread}}.}

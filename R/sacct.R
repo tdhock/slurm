@@ -7,20 +7,11 @@ na.as.zero <- function(int.or.empty){
 ### Match one or more digits and convert to integer.
 int.pattern <- list("[0-9]+", as.integer)
 
-### Pattern for either one task or a range.
-task.pattern <- list(
-  task.id=int.pattern,
-  "|",#either one task(above) or range(below)
-  "\\[",
-  task1=int.pattern,
-  nc::quantifier("-", taskN=int.pattern, "?"),
-  "\\]")
-
 ### Named list of patterns for parsing sacct fields.
 sacct.pattern.list <- list(
   JobID=list(
     job=int.pattern,
-    nc::quantifier("_", task.pattern, "?"),
+    nc::quantifier("_", task=int.pattern, "?"),
     nc::quantifier("[.]", type=".*", "?")),
   ExitCode=list(
     ## DerivedExitCode: The highest exit code returned by the job's job
@@ -65,13 +56,16 @@ sacct_lines <- function
   format.fields=c("JobID","ExitCode","State","MaxRSS","Elapsed"),
 ### character vector of field names to pass to sacct --format. Use
 ### sacct_fields to get all fields.
-  delimiter="\t"
+  delimiter="\t",
 ### passed as --delimiter.
+  out_file=getOption("slurm.sacct_lines.out_file")
 ){
   cmd <- sprintf(
-    "sacct -P %s --delimiter='%s' --format=%s",
+    "sacct --array -P %s --delimiter='%s' --format=%s",
     args, delimiter, paste(format.fields, collapse=","))
+  if(!is.null(out_file))message(cmd)
   line.vec <- system(cmd, intern=TRUE)
+  if(!is.null(out_file))cat(line.vec, file=out_file, sep="\n")
   sacct_fread(text=line.vec, sep=delimiter)
 ### Same as sacct_fread.
 }
@@ -100,20 +94,12 @@ sacct_fread <- structure(function(...){
 })
 
 ### Use output of sacct_fread to compute a table with one row per task.
-sacct_tasks <- structure(function(match.dt){
-  taskN <- task1 <- JobID <- task <- task.id <- unit <-
+sacct_tasks <- structure(function(task.dt){
+  taskN <- task1 <- JobID <- task <- unit <-
     megabytes <- amount <- type <- type <- hours <- State <- 
       days.only <- hours.only <- minutes.only <- seconds.only <-
         job <- task <- Elapsed <- State_blank <- NULL
   ## above to avoid CRAN NOTE
-  range.dt <- match.dt[!is.na(taskN)]
-  task.dt <- rbind(
-    if(nrow(range.dt))range.dt[, {
-      data.table(.SD, task=seq(task1, taskN))
-    }, by=list(JobID)],
-    match.dt[is.na(taskN), {
-      data.table(.SD, task=ifelse(is.na(task.id), task1, task.id))
-    }])
   amount.per.megabyte <- c(
     G=1/1024,
     K=1024,
@@ -182,8 +168,8 @@ sacct_tasks <- structure(function(match.dt){
 })
 
 ### Run sacct and summarize State/ExitCode values for given job IDS
-sjob <- function(job.id=sq.jobs(), tasks.width=11){
-  sacct.dt <- sacct(paste0("-j", job.id))
+sjob <- function(job.id=sq.jobs(), tasks.width=11, ...){
+  sacct.dt <- sacct(paste0("-j", job.id), ...)
   sjob_dt(sacct.dt, tasks.width=tasks.width)
 ### Data table from sjob_dt.
 }
