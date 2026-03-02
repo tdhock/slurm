@@ -70,8 +70,9 @@ sacct_lines <- function
   out_file=getOption("slurm.sacct_lines.out_file")
 ){
   cmd <- sprintf(
-    "sacct -P %s --delimiter='%s' --format=%s",
+    "sacct --array -P %s --delimiter='%s' --format=%s",
     args, delimiter, paste(format.fields, collapse=","))
+  if(!is.null(out_file))message(cmd)
   line.vec <- system(cmd, intern=TRUE)
   if(!is.null(out_file))cat(line.vec, file=out_file, sep="\n")
   sacct_fread(text=line.vec, sep=delimiter)
