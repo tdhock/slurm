@@ -65,13 +65,15 @@ sacct_lines <- function
   format.fields=c("JobID","ExitCode","State","MaxRSS","Elapsed"),
 ### character vector of field names to pass to sacct --format. Use
 ### sacct_fields to get all fields.
-  delimiter="\t"
+  delimiter="\t",
 ### passed as --delimiter.
+  out_file=getOption("slurm.sacct_lines.out_file")
 ){
   cmd <- sprintf(
     "sacct -P %s --delimiter='%s' --format=%s",
     args, delimiter, paste(format.fields, collapse=","))
   line.vec <- system(cmd, intern=TRUE)
+  if(!is.null(out_file))cat(line.vec, file=out_file, sep="\n")
   sacct_fread(text=line.vec, sep=delimiter)
 ### Same as sacct_fread.
 }
@@ -182,8 +184,8 @@ sacct_tasks <- structure(function(match.dt){
 })
 
 ### Run sacct and summarize State/ExitCode values for given job IDS
-sjob <- function(job.id=sq.jobs(), tasks.width=11){
-  sacct.dt <- sacct(paste0("-j", job.id))
+sjob <- function(job.id=sq.jobs(), tasks.width=11, ...){
+  sacct.dt <- sacct(paste0("-j", job.id), ...)
   sjob_dt(sacct.dt, tasks.width=tasks.width)
 ### Data table from sjob_dt.
 }
