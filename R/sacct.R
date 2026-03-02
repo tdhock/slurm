@@ -7,20 +7,11 @@ na.as.zero <- function(int.or.empty){
 ### Match one or more digits and convert to integer.
 int.pattern <- list("[0-9]+", as.integer)
 
-### Pattern for either one task or a range.
-task.pattern <- list(
-  task.id=int.pattern,
-  "|",#either one task(above) or range(below)
-  "\\[",
-  task1=int.pattern,
-  nc::quantifier("-", taskN=int.pattern, "?"),
-  "\\]")
-
 ### Named list of patterns for parsing sacct fields.
 sacct.pattern.list <- list(
   JobID=list(
     job=int.pattern,
-    nc::quantifier("_", task.pattern, "?"),
+    nc::quantifier("_", task.id=int.pattern, "?"),
     nc::quantifier("[.]", type=".*", "?")),
   ExitCode=list(
     ## DerivedExitCode: The highest exit code returned by the job's job
