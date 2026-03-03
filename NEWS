@@ -1,3 +1,7 @@
+Changes in version 2026.3.3 (PR#6)
+
+- sjob_dt() uses all ExitCode and State columns, so we can see OOM in State_0 column.
+
 Changes in version 2026.3.1 (PR#5)
 
 - sacct_lines() gains out_file arg, can be passed from sjob(out_file="~/sacct.txt") for debugging.
