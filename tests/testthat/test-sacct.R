@@ -3,6 +3,15 @@ library(testthat)
 context("sacct")
 
 slurm.txt <- system.file(
+  package="slurm", "extdata", "sacct-oom.txt", mustWork=TRUE)
+test_that("sjob shows OOM", {
+  dt <- sacct_fread(slurm.txt)
+  (tdt <- sacct_tasks(dt))
+  (jdt <- sjob_dt(tdt))
+  expect_identical(jdt$State_0, "OUT_OF_MEMORY")
+})
+
+slurm.txt <- system.file(
   package="slurm", "extdata", "sacct-pending.txt", mustWork=TRUE)
 test_that("sacct_fread works for prev unrecognized unit", {
   dt <- sacct_fread(slurm.txt)

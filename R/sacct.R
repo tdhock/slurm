@@ -178,30 +178,26 @@ sjob <- function(job.id=sq.jobs(), tasks.width=11, ...){
 sjob_dt <- structure(function(time.dt, tasks.width=11){
   ExitCodes <- task <- NULL
   ## above to avoid CRAN NOTE
-  suffix.vec <- c("batch", "blank", "extern")
-  col.name.list <- list()
-  for(prefix in c("ExitCode", "State")){
-    possible.vec <- paste0(prefix, "_", suffix.vec)
-    col.name.list[[prefix]] <- possible.vec[possible.vec %in% names(time.dt)]
-  }
+  col.name.list <- sapply(
+    c("ExitCode","State"),
+    grep, names(time.dt), value=TRUE,
+    simplify=FALSE)
   paste.args <- as.list(time.dt[, col.name.list$ExitCode, with=FALSE])
-  time.dt[, ExitCodes := do.call(paste, paste.args)]
-  by.vars <- c(
+  data.table(time.dt)[
+  , ExitCodes := do.call(paste, paste.args)
+  ][, list(
+    count=.N,
+    array_tasks={
+      tasks.long <- paste(task, collapse=",")
+      ifelse(
+        tasks.width < nchar(tasks.long),
+        sub("[0-9]+$", "", substr(tasks.long, 1, tasks.width-1)),
+        tasks.long)
+    }
+  ), keyby=c(
     "job",
     col.name.list$State,
-    "ExitCodes")
-  time.dt[, {
-    list(
-      count=.N,
-      tasks={
-        tasks.long <- paste(task, collapse=",")
-        ifelse(
-          tasks.width < nchar(tasks.long),
-          sub("[0-9]+$", "", substr(tasks.long, 1, tasks.width-1)),
-          tasks.long)
-      }
-    )
-  }, keyby=by.vars]
+    "ExitCodes")]
 ### data.table with one row per unique value of job/State/ExitCode
 ### (and keyed on these columns).
 }, ex=function(){
