@@ -8,7 +8,7 @@
 slurm, can be changed to cat a file for testing.}
 }
 
-\value{character vector.}
+\value{character vector, items that can be used as format.fields argument to sacct_lines().}
 
 \author{Toby Hocking <toby.hocking@r-project.org> [aut, cre]}
 

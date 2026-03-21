@@ -43,7 +43,7 @@ sacct_fields <- function
   sacct_lines <- system(cmd, intern=TRUE)
   match_dt <- nc::capture_all_str(sacct_lines, field="\\w+")
   match_dt[["field"]]
-### character vector.
+### character vector, items that can be used as format.fields argument to sacct_lines().
 }
 
 ### Run sacct_lines then sacct_tasks.
