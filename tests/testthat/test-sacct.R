@@ -69,6 +69,6 @@ test_that("sacct_fields works with fewer columns on last line", {
     package="slurm", "extdata", "sacct-e-rorqual-2026-03-20.txt", mustWork=TRUE)
   computed <- slurm::sacct_fields(paste("cat", sacct.txt))
   sacct.lines <- readLines(sacct.txt)
-  expected <- strsplit(paste(sacct.lines, collapse=" "), " +")[[1]]
+  expected <- unlist(strsplit(sacct.lines, " +"))
   expect_identical(computed, expected)
 })
