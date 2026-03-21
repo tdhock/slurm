@@ -1,3 +1,7 @@
+Changes in version 2026.3.20 (PR#8)
+
+- sacct_fields() correctly parses sacct -e output with fewer fields on the last line.
+
 Changes in version 2026.3.3 (PR#6)
 
 - sjob_dt() uses all ExitCode and State columns, so we can see OOM in State_0 column.
