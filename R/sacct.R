@@ -34,11 +34,16 @@ sacct.pattern.list <- list(
     unit=".*",
     nomatch.error=FALSE))
 
+sacct_fields <- function
 ### Get current fields from sacct.
-sacct_fields <- function(){
-  fields.dt <- fread(cmd="sacct -e", header=FALSE)
-  melt(fields.dt, measure.vars=names(fields.dt))$value
-### character vector.
+(cmd="sacct -e"
+### command to run and capture output, default "sacct -e" to query
+### slurm, can be changed to cat a file for testing.
+){
+  slines <- system(cmd, intern=TRUE)
+  match_dt <- nc::capture_all_str(slines, field="\\w+")
+  match_dt[["field"]]
+### character vector, items that can be used as format.fields argument to sacct_lines
 }
 
 ### Run sacct_lines then sacct_tasks.
