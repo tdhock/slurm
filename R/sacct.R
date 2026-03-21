@@ -40,10 +40,10 @@ sacct_fields <- function
 ### command to run and capture output, default "sacct -e" to query
 ### slurm, can be changed to cat a file for testing.
 ){
-  sacct_lines <- system(cmd, intern=TRUE)
-  match_dt <- nc::capture_all_str(sacct_lines, field="\\w+")
+  slines <- system(cmd, intern=TRUE)
+  match_dt <- nc::capture_all_str(slines, field="\\w+")
   match_dt[["field"]]
-### character vector, items that can be used as format.fields argument to sacct_lines().
+### character vector, items that can be used as format.fields argument to sacct_lines
 }
 
 ### Run sacct_lines then sacct_tasks.
