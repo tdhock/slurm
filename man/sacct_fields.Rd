@@ -2,7 +2,11 @@
 \alias{sacct_fields}
 \title{sacct fields}
 \description{Get current fields from \code{\link{sacct}}.}
-\usage{sacct_fields()}
+\usage{sacct_fields(cmd = "sacct -e")}
+\arguments{
+  \item{cmd}{command to run and capture output, default "sacct -e" to query
+slurm, can be changed to cat a file for testing.}
+}
 
 \value{character vector.}
 
